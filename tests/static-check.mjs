@@ -32,5 +32,8 @@ for (const marker of [
 
 assert.match(html, /<title>Image Data Cleaner<\/title>/);
 assert.doesNotMatch(html, /IMAGE PROCESSING UNIT|LOCAL ONLY|BATCH SANITIZER|DROP FILE TO SCAN/);
+const radiusValues = [...html.matchAll(/border-radius\s*:\s*([^;]+);/g)].map((match) => match[1].trim());
+assert.ok(radiusValues.length > 0, 'expected explicit square-corner rules');
+assert.ok(radiusValues.every((value) => value === '0' || value === '0 !important'), 'rounded corners remain in the UI');
 
 console.log('Static checks passed.');

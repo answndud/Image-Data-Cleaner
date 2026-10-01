@@ -6,17 +6,16 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const app = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
-const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
+const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];
+assert.equal(scripts.length, 1, 'runtime must be contained in one inline script');
+const runtime = scripts[0][1];
 
-assert.match(html, /<script src="\.\/js\/app\.js" defer integrity="sha384-/);
-assert.doesNotMatch(html, /<script>\s/);
-new Function(app);
-new Function(serviceWorker);
+assert.doesNotMatch(html, /<script\s+src=/i, 'index.html must not load external scripts');
+new Function(runtime);
 
-const appIntegrity = `sha384-${crypto.createHash('sha384').update(app).digest('base64')}`;
-assert.ok(html.includes(`integrity="${appIntegrity}"`), 'app.js integrity hash is stale');
+const runtimeIntegrity = `sha384-${crypto.createHash('sha384').update(runtime).digest('base64')}`;
+assert.match(html, new RegExp(`script-src[^;]*${runtimeIntegrity.replace(/[+/=]/g, '\\$&')}`), 'inline runtime CSP hash is stale');
+assert.doesNotMatch(html, /manifest\.webmanifest|sw\.js|serviceWorker\.register|vendor\/|js\/app\.js/);
 
 for (const marker of [
   'multiple',
@@ -25,15 +24,13 @@ for (const marker of [
   'processBatch',
   'verifyCleanBlob',
   'aria-live="polite"',
-  'serviceWorker.register',
-  'integrity="sha384-'
+  'processBatch',
+  'exifr.parse'
 ]) {
-  assert.ok(`${html}\n${app}`.includes(marker), `missing expected feature: ${marker}`);
+  assert.ok(html.includes(marker), `missing expected feature: ${marker}`);
 }
 
-assert.equal(manifest.name, 'Image Data Cleaner');
-assert.equal(manifest.start_url, './');
-assert.equal(manifest.scope, './');
-assert.ok(fs.existsSync(path.join(root, 'icon.svg')));
+assert.match(html, /<title>Image Data Cleaner<\/title>/);
+assert.doesNotMatch(html, /IMAGE PROCESSING UNIT|LOCAL ONLY|BATCH SANITIZER|DROP FILE TO SCAN/);
 
 console.log('Static checks passed.');

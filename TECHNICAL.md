@@ -343,8 +343,7 @@ GPS 좌표 자릿수와 정밀도:
 ### 5.1 라이브러리 로드
 
 ```html
-<!-- 로컬 번들 로드 -->
-<script src="./vendor/exifr.full.umd.js"></script>
+<!-- index.html 내부에 로컬 번들된 exifr 코드가 포함됨 -->
 ```
 
 ### 5.2 기본 사용법

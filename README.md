@@ -36,7 +36,7 @@
 - 여러 이미지를 한 번에 처리하고 개별 다운로드 가능
 - JPEG 품질, 출력 형식, 대용량 이미지 축소 옵션 제공
 - 정리 후 민감 메타데이터를 다시 검사하여 결과를 검증
-- Service Worker를 통한 오프라인 사용 지원
+- 별도 빌드 없이 `index.html` 하나로 GitHub Pages 배포 가능
 
 ## 🚀 사용 방법
 
@@ -82,13 +82,7 @@
 
 ```
 image-data-cleaner/
-├── vendor/
-│   └── exifr.full.umd.js
-├── index.html      # 메인 화면 구조와 스타일
-├── js/app.js       # 이미지 분석·정리 로직
-├── manifest.webmanifest # 오프라인 앱 설치 정보
-├── sw.js            # Service Worker 캐시
-├── icon.svg         # 앱 아이콘
+├── index.html      # 화면, 스타일, EXIF 라이브러리, 이미지 처리 로직 전체
 ├── package.json     # 정적 검사 명령
 ├── tests/
 │   └── static-check.mjs

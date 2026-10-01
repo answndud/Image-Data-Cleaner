@@ -39,6 +39,9 @@
         const batchSummary = document.getElementById('batchSummary');
         const batchList = document.getElementById('batchList');
         const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const batchProgressBar = document.getElementById('batchProgressBar');
+        const batchProgressLabel = document.getElementById('batchProgressLabel');
+        const batchProgress = document.querySelector('.batch-progress');
         const infoSection = document.querySelector('.info-section');
         const infoSectionToggle = document.getElementById('infoSectionToggle');
         const canvas = document.getElementById('canvas');
@@ -163,7 +166,7 @@
             processingStatus.textContent = '';
             clearBtn.disabled = true;
             removeExifBtn.disabled = true;
-            removeExifBtn.textContent = '메타데이터 삭제';
+            removeExifBtn.textContent = 'REMOVE METADATA';
             resetMetadataView();
         }
 
@@ -179,7 +182,7 @@
             clearBtn.disabled = false;
             updateImageInfo(file, { width: '분석 중', height: '분석 중' });
             processingStatus.textContent = '이미지를 읽는 중...';
-            removeExifBtn.textContent = '이미지 읽는 중...';
+            removeExifBtn.textContent = 'READING IMAGE...';
             removeExifBtn.disabled = true;
 
             try {
@@ -194,13 +197,13 @@
                 imagePreview.alt = `${file.name} 미리보기`;
                 uploadZone.classList.add('has-image');
                 updateImageInfo(file, loaded.image);
-                removeExifBtn.textContent = '메타데이터 삭제';
+                removeExifBtn.textContent = 'REMOVE METADATA';
                 removeExifBtn.disabled = false;
             } catch (error) {
                 if (token !== operationToken) return;
                 showToast('이 이미지 형식은 브라우저 미리보기를 지원하지 않습니다.', 'error');
                 updateImageInfo(file, { width: '-', height: '-' });
-                removeExifBtn.textContent = '삭제 불가';
+                removeExifBtn.textContent = 'UNAVAILABLE';
                 removeExifBtn.disabled = true;
             }
 
@@ -230,14 +233,15 @@
             batchResults = [];
             batchSection.hidden = false;
             batchList.replaceChildren();
-            batchSummary.textContent = `${files.length}개 파일 처리 준비 중...`;
+            batchSummary.textContent = `BATCH INIT / ${files.length} FILES`;
             downloadAllBtn.disabled = true;
+            updateBatchProgress(0, files.length);
 
             for (let index = 0; index < files.length; index += 1) {
                 if (token !== operationToken) return;
                 const file = files[index];
                 let batchObjectUrl = null;
-                batchSummary.textContent = `${index + 1}/${files.length} 처리 중...`;
+                batchSummary.textContent = `SCAN ${String(index + 1).padStart(2, '0')} / ${String(files.length).padStart(2, '0')}`;
                 try {
                     const metadata = await parseExifData(file);
                     if (token !== operationToken) return;
@@ -254,12 +258,13 @@
                     appendBatchResult(batchResults.length - 1, 'error', error.message || '처리 실패');
                 } finally {
                     if (batchObjectUrl) URL.revokeObjectURL(batchObjectUrl);
+                    updateBatchProgress(index + 1, files.length);
                 }
             }
 
             if (token !== operationToken) return;
             const successful = batchResults.filter((result) => result.blob).length;
-            batchSummary.textContent = `${files.length}개 중 ${successful}개 처리 완료`;
+            batchSummary.textContent = `BATCH COMPLETE / ${successful} OF ${files.length} SANITIZED`;
             downloadAllBtn.disabled = successful === 0;
         }
 
@@ -272,13 +277,13 @@
             name.textContent = result.file.name;
             const state = document.createElement('span');
             state.className = `batch-result-state ${type}`;
-            state.textContent = type === 'success' ? `완료 · ${message}` : `실패 · ${message}`;
+            state.textContent = type === 'success' ? `SANITIZED · ${message}` : `FAILED · ${message}`;
             row.append(name, state);
             if (type === 'success') {
                 const button = document.createElement('button');
                 button.className = 'btn btn-secondary';
                 button.type = 'button';
-                button.textContent = '다운로드';
+                button.textContent = 'DOWNLOAD';
                 button.dataset.batchIndex = String(index);
                 row.appendChild(button);
             }
@@ -297,6 +302,13 @@
                 setTimeout(() => downloadBlob(result.blob, result.file.name), index * 350);
             });
         });
+
+        function updateBatchProgress(completed, total) {
+            const percentage = total ? Math.round((completed / total) * 100) : 0;
+            batchProgressBar.style.width = `${percentage}%`;
+            batchProgressLabel.textContent = `${String(completed).padStart(2, '0')} / ${String(total).padStart(2, '0')} PROCESSED`;
+            batchProgress.setAttribute('aria-valuenow', String(percentage));
+        }
 
         // Enable buttons after a file has been accepted.
 
@@ -415,10 +427,10 @@
             noExifFound.style.display = 'block';
             exifSection.classList.remove('visible');
             if (currentImage) {
-                removeExifBtn.textContent = '메타데이터 삭제';
+                removeExifBtn.textContent = 'REMOVE METADATA';
                 removeExifBtn.disabled = false;
             } else {
-                removeExifBtn.textContent = '삭제 불가';
+                removeExifBtn.textContent = 'UNAVAILABLE';
                 removeExifBtn.disabled = true;
             }
         }
@@ -983,7 +995,7 @@
             }
 
             removeExifBtn.disabled = true;
-            removeExifBtn.textContent = '처리 중...';
+            removeExifBtn.textContent = 'SANITIZING...';
 
             try {
                 const result = await removeExif();
@@ -991,7 +1003,7 @@
             } catch (error) {
                 showToast('처리 중 오류가 발생했습니다: ' + error.message, 'error');
                 removeExifBtn.disabled = false;
-                removeExifBtn.textContent = '메타데이터 삭제';
+                removeExifBtn.textContent = 'REMOVE METADATA';
             }
         });
 
@@ -1017,7 +1029,7 @@
             resultSection.classList.add('visible');
             processingStatus.textContent = result.wasResized ? '완료 · 안전한 처리를 위해 해상도를 축소했습니다.' : '정리 및 검증 완료';
             removeExifBtn.disabled = false;
-            removeExifBtn.textContent = '메타데이터 다시 삭제';
+            removeExifBtn.textContent = 'RE-SANITIZE';
             return result;
         }
 
@@ -1096,6 +1108,7 @@
             batchList.replaceChildren();
             batchSummary.textContent = '';
             downloadAllBtn.disabled = true;
+            updateBatchProgress(0, 0);
         });
 
         // ============================================

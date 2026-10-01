@@ -1,0 +1,19 @@
+{
+  "name": "Image Data Cleaner",
+  "short_name": "Image Cleaner",
+  "description": "브라우저에서 이미지 메타데이터를 분석하고 제거하는 로컬 도구",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f8",
+  "theme_color": "#1d4ed8",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}

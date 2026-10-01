@@ -31,6 +31,13 @@
 - 외부 서비스 호출 없이 동작하도록 구성됨
 - 단, "지도에서 위치 확인" 링크를 클릭하면 해당 GPS 좌표가 Google Maps로 전달됩니다.
 
+### ⚙️ 안전한 일괄 정리
+- 최대 50MB 이미지 파일 지원
+- 여러 이미지를 한 번에 처리하고 개별 다운로드 가능
+- JPEG 품질, 출력 형식, 대용량 이미지 축소 옵션 제공
+- 정리 후 민감 메타데이터를 다시 검사하여 결과를 검증
+- Service Worker를 통한 오프라인 사용 지원
+
 ## 🚀 사용 방법
 
 ### 메타데이터 확인
@@ -77,7 +84,14 @@
 image-data-cleaner/
 ├── vendor/
 │   └── exifr.full.umd.js
-├── index.html      # 메인 애플리케이션 (HTML/CSS/JS 통합)
+├── index.html      # 메인 화면 구조와 스타일
+├── js/app.js       # 이미지 분석·정리 로직
+├── manifest.webmanifest # 오프라인 앱 설치 정보
+├── sw.js            # Service Worker 캐시
+├── icon.svg         # 앱 아이콘
+├── package.json     # 정적 검사 명령
+├── tests/
+│   └── static-check.mjs
 ├── README.md       # 프로젝트 문서
 └── TECHNICAL.md    # 기술 상세 문서
 ```
@@ -85,6 +99,8 @@ image-data-cleaner/
 ## 🖼️ 지원 형식
 
 > 주의: 실제로 안정적인 읽기/정리 경험은 JPEG/JPG와 PNG 중심입니다. WebP와 TIFF는 브라우저 호환성에 따라 제한될 수 있습니다.
+
+> 정리 결과는 브라우저 Canvas로 재인코딩됩니다. 따라서 선택적 메타데이터 보존이 아닌 전체 메타데이터 제거 방식이며, 이미지 형식·품질·색상 프로파일이 일부 달라질 수 있습니다.
 
 | 형식 | 읽기 | 쓰기 |
 |------|:----:|:----:|

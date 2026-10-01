@@ -1,0 +1,8 @@
+{
+  "name": "image-data-cleaner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/static-check.mjs"
+  }
+}

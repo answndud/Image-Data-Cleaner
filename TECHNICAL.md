@@ -775,15 +775,19 @@ const SENSITIVE_TAGS = [
  * 
  * 2. 로컬 저장 최소화
  *    - 이미지 데이터, 메타데이터 분석 결과, 정리된 파일은 localStorage/sessionStorage/IndexedDB에 저장하지 않음
- *    - UI 테마만 localStorage에 저장함
+ *    - Service Worker 캐시는 앱 셸과 로컬 라이브러리만 저장함
  *    - 파일 시스템 쓰기 없음 (다운로드 제외)
  * 
  * 3. 메모리 내 처리
- *    - FileReader API: 파일 → 메모리
+ *    - URL.createObjectURL: 파일 → 브라우저 임시 URL
  *    - Canvas API: 이미지 처리
  *    - Blob API: 결과 생성
  *    - URL.createObjectURL: 임시 URL 생성
  *    - URL.revokeObjectURL: 메모리 해제
+ *
+ * 4. 결과 검증
+ *    - Canvas 재인코딩 결과를 exifr로 다시 분석함
+ *    - GPS, 촬영일, 카메라 식별자 등 민감 태그 잔존 여부를 확인함
  */
 ```
 

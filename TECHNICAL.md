@@ -1,4 +1,4 @@
-# 📷 Photo Privacy Cleaner - 기술 문서
+# 📷 Image Data Cleaner - 기술 문서
 
 이 문서는 이미지 메타데이터 뷰어 및 정리기의 기술적 구현 세부사항을 설명합니다. EXIF 파일 형식의 구조, XMP/IPTC/ICC 확장 메타데이터 파싱, Canvas API를 통한 메타데이터 정리 원리 등 핵심 기술들을 다룹니다.
 
@@ -986,4 +986,4 @@ async function processBatch(files) {
 
 ---
 
-*이 문서는 Photo Privacy Cleaner 프로젝트의 기술적 구현 세부사항을 설명합니다.*
+*이 문서는 Image Data Cleaner 프로젝트의 기술적 구현 세부사항을 설명합니다.*

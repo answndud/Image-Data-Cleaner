@@ -1,4 +1,4 @@
-# 📷 Photo Privacy Cleaner
+# 📷 Image Data Cleaner
 
 이미지에 숨겨진 메타데이터(EXIF, GPS, XMP, IPTC, ICC)를 확인하고 정리하는 웹 기반 프라이버시 도구입니다. 이미지 파일은 서버로 업로드되지 않으며, 분석과 정리는 브라우저 내부에서 처리됩니다.
 
@@ -74,7 +74,7 @@
 ## 📁 프로젝트 구조
 
 ```
-PhotoPrivacyCleaner/
+image-data-cleaner/
 ├── vendor/
 │   └── exifr.full.umd.js
 ├── index.html      # 메인 애플리케이션 (HTML/CSS/JS 통합)
